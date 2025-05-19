@@ -1,103 +1,238 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+
+const colors = {
+  primary: '#2B3A67',
+  accent: '#F7921E',
+  background: '#F5F7FA',
+  textDark: '#1F2937',
+};
+
+export default function HomePage() {
+  const [step, setStep] = useState<'auth' | 'loan' | 'result'>('auth');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [businessName, setBusinessName] = useState('');
+  const [taxId, setTaxId] = useState('');
+  const [requestedAmount, setRequestedAmount] = useState('');
+
+  const [decision, setDecision] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submitLoanApplication() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const amount = Number(requestedAmount);
+
+      let result = '';
+      if (amount > 50000) result = 'Declined';
+      else if (amount === 50000) result = 'Undecided';
+      else result = 'Approved';
+
+      await new Promise((r) => setTimeout(r, 700));
+      setDecision(result);
+      setStep('result');
+    } catch (err) {
+      setError('Error processing your request. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ backgroundColor: colors.background }}
+    >
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+        <h1
+          className="text-3xl font-bold mb-6 text-center"
+          style={{ color: colors.primary }}
+        >
+          LendingFront Loan Application
+        </h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        {step === 'auth' && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!email || !password) {
+                setError('Email and password are required');
+                return;
+              }
+              setError(null);
+              setStep('loan');
+            }}
+            className="space-y-5"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div>
+              <label className="block mb-1 font-medium" style={{ color: colors.textDark }}>
+                Email
+              </label>
+              <input
+                type="email"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium" style={{ color: colors.textDark }}>
+                Password
+              </label>
+              <input
+                type="password"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-600 text-sm mb-2">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded transition"
+            >
+              Continue
+            </button>
+          </form>
+        )}
+
+        {step === 'loan' && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!taxId || !businessName || !requestedAmount) {
+                setError('All fields are required');
+                return;
+              }
+              setError(null);
+              submitLoanApplication();
+            }}
+            className="space-y-5"
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <div>
+              <label className="block mb-1 font-medium" style={{ color: colors.textDark }}>
+                Tax ID
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                value={taxId}
+                onChange={(e) => setTaxId(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium" style={{ color: colors.textDark }}>
+                Business Name
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium" style={{ color: colors.textDark }}>
+                Requested Amount
+              </label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                value={requestedAmount}
+                onChange={(e) => setRequestedAmount(e.target.value)}
+                required
+                min={1}
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-600 text-sm mb-2">
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-between">
+              <button
+                type="button"
+                className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
+                onClick={() => {
+                  setStep('auth');
+                  setError(null);
+                }}
+              >
+                Back
+              </button>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-4 py-2 rounded text-white ${
+                  loading ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'
+                }`}
+              >
+                {loading ? 'Submitting...' : 'Submit Application'}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === 'result' && (
+          <div className="text-center">
+            <h2
+              className="text-2xl font-semibold mb-4"
+              style={{ color: colors.primary }}
+            >
+              Loan Decision
+            </h2>
+            <p
+              className={`text-lg font-bold ${
+                decision === 'Approved'
+                  ? 'text-green-600'
+                  : decision === 'Declined'
+                  ? 'text-red-600'
+                  : 'text-yellow-600'
+              }`}
+            >
+              {decision}
+            </p>
+
+            <button
+              className="mt-8 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              onClick={() => {
+                setStep('auth');
+                setEmail('');
+                setPassword('');
+                setBusinessName('');
+                setTaxId('');
+                setRequestedAmount('');
+                setDecision(null);
+                setError(null);
+              }}
+            >
+              Start Over
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
