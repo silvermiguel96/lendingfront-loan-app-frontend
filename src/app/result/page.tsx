@@ -1,11 +1,19 @@
 interface ResultPageProps {
-  searchParams: {
-    decision: string;
+  readonly searchParams: {
+    readonly decision: string;
   };
 }
 
 export default function ResultPage({ searchParams }: ResultPageProps) {
   const decision = searchParams.decision;
+  let decisionColorClass = '';
+  if (decision === 'Approved') {
+    decisionColorClass = 'text-green-600';
+  } else if (decision === 'Declined') {
+    decisionColorClass = 'text-red-600';
+  } else {
+    decisionColorClass = 'text-yellow-600';
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white text-center p-8">
@@ -14,13 +22,7 @@ export default function ResultPage({ searchParams }: ResultPageProps) {
         <p className="text-lg">
           Result:{" "}
           <span
-            className={`font-bold ${
-              decision === 'Approved'
-                ? 'text-green-600'
-                : decision === 'Declined'
-                ? 'text-red-600'
-                : 'text-yellow-600'
-            }`}
+            className={`font-bold ${decisionColorClass}`}
           >
             {decision}
           </span>

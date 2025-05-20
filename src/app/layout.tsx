@@ -1,3 +1,4 @@
+import './globals.css'; 
 import { LoanAppProvider } from '@/context/LoanAppProvider';
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
