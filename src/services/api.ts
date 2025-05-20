@@ -4,17 +4,19 @@ export interface ApplyPayload {
   requested_amount: number;
 }
 
-export async function submitLoanApplication(data: ApplyPayload) {
-   console.log('Enviando solicitud con:', data);
+export async function submitLoanApplication(payload: ApplyPayload) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/v1/loan/apply`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to apply');
+  const data = await res.json();
+
+  if (!res.ok || !data?.details) {
+    const errorMessage = data?.message || 'Error desconocido del servidor';
+    throw new Error(errorMessage);
   }
 
-  return res.json();
+  return data;
 }

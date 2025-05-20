@@ -8,7 +8,7 @@ export function useLoanForm() {
   const [password, setPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [taxId, setTaxId] = useState('');
-  const [requestedAmount, setRequestedAmount] = useState('');
+  const [requestedAmount, setRequestedAmount] = useState('30000');
   const [decision, setDecision] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +27,13 @@ export function useLoanForm() {
     const decision = parseLoanDecision(response);
     setDecision(decision);
     setStep('result');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || 'Error processing your request. Please try again.');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Error processing your request. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
