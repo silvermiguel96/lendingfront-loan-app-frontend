@@ -1,5 +1,5 @@
 'use client';
-import { useLoanForm } from '@/hooks/useLoanForm';
+import { useLoanApp } from '@/hooks/useLoanApp';
 import { LoanCard } from '@/components/LoanCard';
 import { InputField } from '@/components/InputField';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -18,12 +18,12 @@ export default function HomePage() {
     error, setError,
     submitLoanApplication,
     resetForm
-  } = useLoanForm();
+  } = useLoanApp();
 
   return (
     <LoanCard>
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-[#2B3A67]">
-        LendingFront Loan Application
+        LendingFront Loan Application M
       </h1>
 
       {step === 'auth' && (
@@ -87,28 +87,28 @@ export default function HomePage() {
         </form>
       )}
 
-      {step === 'result' && (
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4 text-[#2B3A67]">Loan Decision</h2>
-          <p
-            className={`text-lg font-bold ${
-              decision === 'Approved'
-                ? 'text-green-600'
-                : decision === 'Declined'
-                ? 'text-red-600'
-                : 'text-yellow-600'
-            }`}
-          >
-            {decision}
-          </p>
-          <button
-            className="mt-8 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            onClick={resetForm}
-          >
-            Start Over
-          </button>
-        </div>
-      )}
+      {step === 'result' && (() => {
+        let decisionClass = 'text-yellow-600';
+        if (decision === 'Approved') {
+          decisionClass = 'text-green-600';
+        } else if (decision === 'Declined') {
+          decisionClass = 'text-red-600';
+        }
+        return (
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-4 text-[#2B3A67]">Loan Decision</h2>
+            <p className={`text-lg font-bold ${decisionClass}`}>
+              {decision}
+            </p>
+            <button
+              className="mt-8 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              onClick={resetForm}
+            >
+              Start Over
+            </button>
+          </div>
+        );
+      })()}
     </LoanCard>
   );
 }
