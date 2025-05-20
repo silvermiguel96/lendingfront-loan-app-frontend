@@ -1,4 +1,4 @@
-import { LoanResponse } from "@/types/account";
+import { LoanResponse } from "@/types";
 
 export function parseLoanDecision(response: LoanResponse): string {
   if (
