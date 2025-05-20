@@ -49,10 +49,14 @@ export default function LoanApplicationForm() {
     setLoading(true);
 
     try {
+      const cleanedTaxId = taxId.trim();
+      const cleanedBusinessName = businessName.trim();
+      const amount = Number(requestedAmount);
+
       const result = await submitLoanApplication({
-        taxId: taxId.trim(),
-        businessName: businessName.trim(),
-        requestedAmount: amount,
+        tax_id: cleanedTaxId,
+        business_name: cleanedBusinessName,
+        requested_amount: amount,
       });
 
       const accountInfo: AccountData = {
@@ -62,7 +66,7 @@ export default function LoanApplicationForm() {
         decision: result.decision,
       };
 
-      setCookie('lendingfront-account', JSON.stringify(accountInfo), { days: 7 });
+      setCookie('lendingfront-account', JSON.stringify(accountInfo),7);
       setAccount(accountInfo);
     } catch {
       setError('Error submitting application.');
@@ -86,13 +90,12 @@ export default function LoanApplicationForm() {
         <p><strong>Requested Amount:</strong> ${account.requestedAmount.toLocaleString()}</p>
         <p>
           <strong>Loan Decision:</strong>{' '}
-          <span className={`font-bold ${
-            account.decision === 'Approved'
+          <span className={`font-bold ${account.decision === 'Approved'
               ? 'text-green-600'
               : account.decision === 'Declined'
-              ? 'text-red-600'
-              : 'text-yellow-600'
-          }`}>
+                ? 'text-red-600'
+                : 'text-yellow-600'
+            }`}>
             {account.decision}
           </span>
         </p>
