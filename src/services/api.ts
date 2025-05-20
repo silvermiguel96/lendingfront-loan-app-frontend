@@ -1,8 +1,20 @@
-export async function submitApplication(data: ApplicationFormData) {
-  const response = await fetch('/api/loan-decision', {
+export interface ApplyPayload {
+  tax_id: string;
+  business_name: string;
+  requested_amount: number;
+}
+
+export async function submitLoanApplication(data: ApplyPayload) {
+   console.log('Enviando solicitud con:', data);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API}/api/v1/loan/apply`, {
     method: 'POST',
-    body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
-  return response.json();
+
+  if (!res.ok) {
+    throw new Error('Failed to apply');
+  }
+
+  return res.json();
 }
